@@ -1,0 +1,40 @@
+{
+  "name": "react-native-tinder-demo",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "android": "react-native run-android",
+    "ios": "react-native run-ios",
+    "start": "react-native start",
+    "test": "jest",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "react": "16.13.1",
+    "react-native": "0.63.2",
+    "react-native-fast-image": "^8.3.2",
+    "react-native-gesture-handler": "^1.7.0",
+    "react-native-modal": "git://github.com/reime005/react-native-modal#452cb50",
+    "react-native-reanimated": "^2.0.0-alpha.5",
+    "react-native-svg": "^12.1.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.8.4",
+    "@babel/runtime": "^7.8.4",
+    "@react-native-community/eslint-config": "^1.1.0",
+    "@types/detox": "^16.4.1",
+    "@types/jest": "^26.0.10",
+    "@types/react": "^16.9.46",
+    "@types/react-native": "^0.63.8",
+    "@types/react-test-renderer": "^16.9.3",
+    "babel-jest": "^25.1.0",
+    "eslint": "^6.5.1",
+    "jest": "^26.x.x",
+    "metro-react-native-babel-preset": "^0.59.0",
+    "react-test-renderer": "16.13.1",
+    "typescript": "^3.9.7"
+  },
+  "jest": {
+    "preset": "react-native"
+  }
+}
