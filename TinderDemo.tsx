@@ -23,7 +23,7 @@ import { SwipePan } from './SwipePan';
 const likeNopeDeg = '22deg';
 
 const { width, height } = Dimensions.get('window');
-const deltaX = width * 0.75;
+const rangeThreshold = width * 0.65;
 
 const images = [
   { src: require('./assets/images/1.jpg') },
@@ -57,33 +57,40 @@ export const TinderDemo = () => {
 
   const onSwiped = useCallback(
     async (right) => {
+      // disable touches while animating
+      setLock(true);
+
       if (right) {
+        // spring 'over the screen' to the right
         x.value = withSpring(width * 1.5);
         y.value = withSpring(0);
       } else {
+        // spring 'over the screen' to the left
         x.value = withSpring(-width * 1.5);
         y.value = withSpring(0);
       }
 
+      // while the spring/swipe animation is running, we do not want to switch
+      // to the next image already, but just when the image is out of screen
       setTimeout(() => {
         const incSafe = (i: number) => (i + 1) % images.length;
 
-        setLock(true);
-
+        // next image 'behind'
         setSecondIndex(incSafe(secondIndex));
+
+        // next image 'on top'
         setIndex(incSafe(index));
 
-        setTimeout(() => {
-          x.value = 0;
-          y.value = 0;
-          overrideNopeOpacity.value = 0;
-          overrideLikeOpacity.value = 0;
-        }, 0);
+        // reset values/positions
+        x.value = 0;
+        y.value = 0;
+        overrideNopeOpacity.value = 0;
+        overrideLikeOpacity.value = 0;
 
-        setTimeout(() => {
-          setKey(key + 1);
-          setLock(false);
-        }, 0);
+        // prevent memory issues
+
+        setKey(key + 1);
+        setLock(false);
       }, 300);
     },
     [key, index, secondIndex],
@@ -94,7 +101,8 @@ export const TinderDemo = () => {
   const originY = useSharedValue(0);
 
   const nopeOpacityStyle = useAnimatedStyle(() => {
-    const opacity = interpolate(x.value, [-1 * deltaX, 0], [1, 0]);
+    // swipe left - x is getting closer more negative - more opacity
+    const opacity = interpolate(x.value, [0, -rangeThreshold], [0, 1]);
 
     return {
       opacity: overrideNopeOpacity.value || opacity,
@@ -102,7 +110,8 @@ export const TinderDemo = () => {
   });
 
   const likeOpacityStyle = useAnimatedStyle(() => {
-    const opacity = interpolate(x.value, [0, deltaX], [0, 1]);
+    // swipe right - x is getting closer more positive - more opacity
+    const opacity = interpolate(x.value, [0, rangeThreshold], [0, 1]);
 
     return {
       opacity: overrideLikeOpacity.value || opacity,
@@ -112,12 +121,15 @@ export const TinderDemo = () => {
   const style = useAnimatedStyle(() => {
     let factor = -1;
 
+    // half of the screen's height changes the rotation direction
     if (originY.value < height / 2) {
       factor = 1;
     }
 
-    const rotateZ = interpolate(x.value, [0, factor * deltaX * 0.1], [0, 1]);
+    // the further we are to the left (-) or right (+), we rotate by up to 10deg
+    const rotateZ = interpolate(x.value, [0, factor * rangeThreshold], [0, 10]);
 
+    // the image rotation with border radius is not working well on android, thus disabled
     return {
       elevation: 2,
       top: 0,
@@ -137,6 +149,7 @@ export const TinderDemo = () => {
   });
 
   const lowerStyle = useAnimatedStyle(() => {
+    // keep the lower image static
     return {
       zIndex: -1,
       top: 0,
@@ -146,7 +159,7 @@ export const TinderDemo = () => {
       position: 'absolute',
       alignItems: 'center',
       justifyContent: 'center',
-      transform: [{ scale: 1 }, { translateX: 0 }, { translateY: 0 }],
+      transform: [{ translateX: 0 }, { translateY: 0 }],
     };
   });
 
@@ -184,7 +197,7 @@ export const TinderDemo = () => {
           </AnimCard>
         </View>
 
-        <View style={[styles.headFoot, { marginBottom: 18 }]}>
+        <View style={[styles.headFoot, { marginBottom: 16 }]}>
           <TouchableOpacity
             onPress={() => {
               // let "nope" stay a bit, before swiping
