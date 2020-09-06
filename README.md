@@ -16,6 +16,3 @@ React Native app that showcases the basic tinder card swipe animation.
   <li>React Native Turbo Module enabled</li>
   <li>uses react-native-fast-image for smoother images</li>
 </ul>
-
-<p>&nbsp;</p>
-
